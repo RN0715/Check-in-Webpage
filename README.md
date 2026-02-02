@@ -1,55 +1,57 @@
-Event Check-In Management System
-A modern, web-based application designed to streamline event management and attendee tracking. This tool replaces traditional paper lists with a digital dashboard, allowing organizers to manage entries efficiently, track real-time attendance, and export data with ease.
+🎟️ Event Check-In System (Google Apps Script)
+A serverless, web-based check-in dashboard built with Google Apps Script and Google Sheets. This system allows event organizers to manage attendees, track live attendance, and export data without any server costs or complex database setup.
 
-Project StatusLicense
+Project StatusLicenseGoogle Apps Script
 
 📸 Project Demo
-Note: The interface features a high-contrast dark theme optimized for event environments.
+A dark-themed interface designed for high visibility in event environments.
 
-Event Dashboard Screenshot(Add your image named screenshot.png to the repository root)
+Event Dashboard Screenshot
 
 ✨ Key Features
-🔍 Real-Time Search: Instantly filter and look up attendees by ID or Name.
-📊 Live Attendance Tracking: Visual dashboard that updates the check-in count dynamically.
-📤 Data Export: Functionality to export registered attendee lists for record-keeping.
-🔄 Attendance Management: Easy tools to reset attendance for new sessions or events.
-🌑 Modern Dark UI: Sleek, user-friendly interface designed to reduce eye strain in low-light venues.
-📜 Activity Logs: Tracks system history and actions for transparency.
+
+🔍 Real-Time Search: Instantly find attendees by ID or Name directly from the Google Sheet.
+📊 Live Attendance Tracking: Automatically updates the count when a user checks in.
+📤 Export Data: Leverages the native Google Sheets export (CSV, Excel, PDF).
+🔄 Reset Functionality: Ability to clear attendance history for a new event session.
+💰 Cost Effective: Runs entirely on the free Google Workspace infrastructure.
+🌑 Dark Mode UI: High-contrast interface for low-light venues.
 
 🛠️ Tech Stack
-Frontend: HTML5, CSS3, JavaScript
-Backend: Python (Replace with: Flask / Django / Streamlit)
-Data Handling: (Replace with: SQLite / CSV / JSON)
 
-🚀 How to Run
-Follow these steps to run the application locally on your machine.
+Frontend: HTML5, CSS3 (Custom Dark Theme), JavaScript
+Backend: Google Apps Script (GAS)
+Database: Google Sheets (acts as the real-time database)
 
-Prerequisites
-Python 3.x installed on your system.
-pip (Python package installer).
-Installation
-Clone the repository
-git clone https://github.com/YOUR_USERNAME/event-checkin-system.git
-Navigate to the project directory
+🚀 How to Run / Deploy
 
-bash
+Since this is built on Google Apps Script, you don't need to install Python or Node.js. You just need a Google Account.
 
-cd event-checkin-system
-Install dependencies
-bash
+Step 1: Prepare the Google Sheet
+Create a new Google Sheet.
+Add column headers (e.g., ID, Name, Status, Timestamp).
+Copy the Spreadsheet ID from the URL (it's the long string between /d/ and /edit).
 
-pip install -r requirements.txt
-Run the application
-bash
+Step 2: Setup the Script
+Go to script.google.com.
+Create a New Project.
+Delete the default code in Code.gs and paste the backend code from this repository.
+Create an index.html file and paste the frontend code.
+Important: Update the SHEET_ID variable in Code.gs with your ID from Step 1.
 
-python [your_script_name].py
-Open in Browser
-Once running, open your web browser and go to:
+Step 3: Deploy as Web App
+Click the blue Deploy button > New deployment.
+Select type: Web app.
+Description: "Event Check-in v1".
+Execute as: Me (your email).
+Who has access: Anyone (This is crucial so attendees can access the link).
 
-http://localhost:5000
-(Note: Change port 5000 if your app uses a different one)
-📝 Usage Example
-This system was used for "The Spirits GENESIS - Fresher's Meetup 2025", successfully handling attendee check-ins and data exports.
+Click Deploy.
+
+Use the provided Web App URL to access your dashboard.
+
+📝 Use Case
+This system was deployed for "The Spirits GENESIS - Fresher's Meetup 2025", successfully handling attendee check-ins with zero downtime and instant data synchronization.
 
 📄 License
 This project is licensed under the MIT License - see the LICENSE file for details.
@@ -57,6 +59,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 👨‍💻 Author
 K.W.R.Nethmini
 
-GitHub: RN0715
-
-
+GitHub: @RN0715
