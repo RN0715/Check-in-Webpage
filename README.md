@@ -1,62 +1,123 @@
-🎟️ Event Check-In System (Google Apps Script)
-A serverless, web-based check-in dashboard built with Google Apps Script and Google Sheets. This system allows event organizers to manage attendees, track live attendance, and export data without any server costs or complex database setup.
+# 🎟️ Event Check-In System (Google Apps Script)
 
-Project StatusLicenseGoogle Apps Script
+A serverless, web-based event check-in dashboard built using **Google Apps Script** and **Google Sheets**.  
+Designed for event organizers to manage attendees, track live attendance, and export data — with **zero server or hosting costs**.
 
-📸 Project Demo
-A dark-themed interface designed for high visibility in event environments.
+---
 
-Event Dashboard Screenshot
+## 📸 Project Overview
 
-✨ Key Features
+A modern, dark-themed interface optimized for event environments and quick check-ins.
 
-🔍 Real-Time Search: Instantly find attendees by ID or Name directly from the Google Sheet.
-📊 Live Attendance Tracking: Automatically updates the count when a user checks in.
-📤 Export Data: Leverages the native Google Sheets export (CSV, Excel, PDF).
-🔄 Reset Functionality: Ability to clear attendance history for a new event session.
-💰 Cost Effective: Runs entirely on the free Google Workspace infrastructure.
-🌑 Dark Mode UI: High-contrast interface for low-light venues.
+> Built and deployed for **“The Spirits GENESIS – Fresher’s Meetup 2025”**
 
-🛠️ Tech Stack
+---
 
-Frontend: HTML5, CSS3 (Custom Dark Theme), JavaScript
-Backend: Google Apps Script (GAS)
-Database: Google Sheets (acts as the real-time database)
+## ✨ Key Features
 
-🚀 How to Run / Deploy
+- 🔍 **Real-Time Search**  
+  Search attendees instantly by ID or Name from Google Sheets.
 
-Since this is built on Google Apps Script, you don't need to install Python or Node.js. You just need a Google Account.
+- 📊 **Live Attendance Counter**  
+  Automatically updates when participants are checked in.
 
-Step 1: Prepare the Google Sheet
-Create a new Google Sheet.
-Add column headers (e.g., ID, Name, Status, Timestamp).
-Copy the Spreadsheet ID from the URL (it's the long string between /d/ and /edit).
+- ✅ **One-Click Check-In**  
+  Prevents duplicate registrations.
 
-Step 2: Setup the Script
-Go to script.google.com.
-Create a New Project.
-Delete the default code in Code.gs and paste the backend code from this repository.
-Create an index.html file and paste the frontend code.
-Important: Update the SHEET_ID variable in Code.gs with your ID from Step 1.
+- ✏️ **Edit Participant Details**  
+  Update name, degree, email, WhatsApp, and district.
 
-Step 3: Deploy as Web App
-Click the blue Deploy button > New deployment.
-Select type: Web app.
-Description: "Event Check-in v1".
-Execute as: Me (your email).
-Who has access: Anyone (This is crucial so attendees can access the link).
+- 📄 **Export Registered Participants**  
+  Export checked-in attendees as a CSV file.
 
-Click Deploy.
+- 🔄 **Reset Attendance**  
+  Clear attendance data for a new session.
 
-Use the provided Web App URL to access your dashboard.
+- 🕒 **Activity Log**  
+  Tracks check-ins, edits, exports, and resets.
 
-📝 Use Case
-This system was deployed for "The Spirits GENESIS - Fresher's Meetup 2025", successfully handling attendee check-ins with zero downtime and instant data synchronization.
+- 🌑 **Dark / Glassmorphic UI**  
+  High-contrast design suitable for low-light venues.
 
-📄 License
-This project is licensed under the MIT License - see the LICENSE file for details.
+---
 
-👨‍💻 Author
-K.W.R.Nethmini
+## 🛠️ Tech Stack
 
-GitHub: @RN0715
+- **Frontend:**  
+  HTML5, CSS3, JavaScript (Custom UI)
+
+- **Backend:**  
+  Google Apps Script (Serverless)
+
+- **Database:**  
+  Google Sheets (real-time data store)
+
+- **Deployment:**  
+  Google Apps Script Web App
+
+---
+
+## 🚀 How to Run / Deploy
+
+No Python, Node.js, or servers required — only a Google account.
+
+### Step 1: Prepare Google Sheet
+1. Create a new Google Sheet
+2. Name the sheet:
+3. Add headers matching the backend logic (ID, Name, Degree, Email, etc.)
+
+---
+
+### Step 2: Setup Google Apps Script
+1. Go to **https://script.google.com**
+2. Create a **New Project**
+3. Replace default code in `Code.gs` with the backend code from this repository
+4. Create an `index.html` file and paste the frontend code
+
+---
+
+### Step 3: Deploy as Web App
+1. Click **Deploy → New deployment**
+2. Select **Web app**
+3. Set:
+- Execute as: **Me**
+- Who has access: **Anyone**
+4. Click **Deploy**
+5. Open the generated Web App URL
+
+---
+
+## ⚠️ Important Note
+
+This project uses:
+
+➡️ It **will NOT work on GitHub Pages**  
+➡️ GitHub is used for **code showcase and version control only**
+
+---
+
+## 📁 Project Structure
+
+genesis-attendance-system/
+│
+├── frontend/
+│ └── index.html
+│
+├── backend/
+│ └── Code.gs
+│
+├── screenshots/
+│ └── (UI screenshots)
+│
+└── README.md
+
+---
+
+## 👩‍💻 Author
+
+**K.W.R.Nethmini**  
+Sri Lanka 🇱🇰  
+
+GitHub: https://github.com/RN0715
+
+
