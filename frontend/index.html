@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!--
+Genesis Attendance Management System
+Frontend UI (Google Apps Script Web App)
+
+⚠️ Note:
+This frontend works ONLY when deployed via Google Apps Script
+because it uses google.script.run to communicate with the backend.
+-->
+
+<style>
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", sans-serif;
+    background:
+        linear-gradient(rgba(40,0,80,0.45), rgba(40,0,80,0.55)),
+        url("https://lh3.googleusercontent.com/d/1SovZ-jfyK0mrUxUT6LKCdQg9GrZ41h7g");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+/* Attendance counter */
+.counter {
+    position: fixed;
+    top: 20px;
+    right: 25px;
+    padding: 10px 22px;
+    border-radius: 30px;
+    background: linear-gradient(135deg,#b84cff,#6a00c9);
+    color: white;
+    font-weight: 700;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    z-index: 100;
+}
+
+/* Top centered search bar */
+.top-search-bar {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 560px;
+    height: 60px;
+    z-index: 99;
+    pointer-events: none;
+}
+
+.search-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.94);
+    backdrop-filter: blur(20px);
+    border-radius: 30px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    overflow: hidden;
+    pointer-events: all;
+    align-items: center;
+    padding: 0 12px;
+}
+
+#search {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 18px;
+    padding: 0 20px;
+    outline: none;
+    color: #333;
+}
+
+#search::placeholder {
+    color: #999;
+}
+
+.search-btn {
+    padding: 0 30px;
+    height: 46px;
+    border: none;
+    background: linear-gradient(135deg,#b84cff,#6a00c9);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 25px;
+    cursor: pointer;
+    min-width: 120px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.search-btn:hover {
+    opacity: 0.9;
+}
+
+/* Result container */
+.result-container {
+    max-width: 520px;
+    margin: 100px auto 40px auto;
+    padding: 0 20px;
+}
+
+/* Card styles */
+.card {
+    padding: 20px;
+    border-radius: 14px;
+    background: #ffffff;
+    border: 1px solid #e0ccee;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    color: #2b2b2b;
+}
+
+.card p { margin: 12px 0; font-size: 16px; }
+.card b { display: inline-block; width: 100px; font-weight: 600; color: #4a148c; }
+.card input { width: 100%; max-width: 300px; padding: 10px; margin: 6px 0; border-radius: 8px; border: 1px solid #ccc; font-size: 15px; box-sizing: border-box; }
+.card button { width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 10px; background: linear-gradient(135deg,#b84cff,#6a00c9); color: white; font-size: 15px; cursor: pointer; }
+.card button:hover { opacity: 0.9; }
+.success { margin-top: 15px; padding: 12px; background: #e8f5e9; color: #2e7d32; font-weight: bold; text-align: center; border-radius: 10px; }
+
+/* Activity panel - with close button and header */
+.activity-panel { 
+    position: fixed; left: 10px; top: 80px; width: 320px; max-height: 75vh; overflow: auto; 
+    background: rgba(255,255,255,0.95); border-radius: 12px; border: 1px solid #ccc; 
+    padding: 15px; display: none; z-index: 90; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+.activity-item { margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px dashed #ddd; }
+
+/* Responsive */
+@media(max-width: 768px) {
+    .top-search-bar { width: 94%; max-width: none; }
+    .search-container { height: 56px; }
+    #search { font-size: 17px; }
+    .search-btn { padding: 0 20px; font-size: 15px; }
+    .result-container { margin: 90px auto 30px; padding: 0 15px; }
+    .card input { max-width: 100%; }
+    .card b { width: auto; display: block; margin-bottom: 4px; }
+    .activity-panel { width: 92%; left: 4%; top: 80px; }
+}
+</style>
+</head>
+<body onload="loadCount()">
+
+<!-- Attendance counter -->
+<div class="counter">
+    Attendance : <span id="count">0</span>
+</div>
+
+<!-- Top-Right Menu -->
+<div class="menu-container" style="position:fixed; top:80px; right:25px; z-index:100;">
+    <button id="menuBtn" onclick="toggleMenu()" style="padding:8px 16px; border-radius:20px; background:linear-gradient(135deg,#7b1fa2,#4a148c); color:white; font-size:14px; font-weight:600; border:none; cursor:pointer; box-shadow:0 4px 15px rgba(0,0,0,0.3); min-width:120px;">☰ Menu</button>
+
+    <div id="menuDropdown" style="display:none; position:absolute; right:0; top:45px; width:200px; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.3); overflow:hidden; border:1px solid #e0ccee;">
+        <button onclick="exportRegistered()" style="width:100%; padding:12px; border:none; background:none; text-align:left; font-size:14px; cursor:pointer; border-bottom:1px solid #eee;">📄 Export Registered</button>
+        <button onclick="resetAttendance()" style="width:100%; padding:12px; border:none; background:none; text-align:left; font-size:14px; cursor:pointer; border-bottom:1px solid #eee; color:#c62828;">🔄 Reset Attendance</button>
+        <button onclick="showActivityHistory()" style="width:100%; padding:12px; border:none; background:none; text-align:left; font-size:14px; cursor:pointer;">📊 Activity History</button>
+    </div>
+</div>
+
+<!-- Centered Top Search Bar -->
+<div class="top-search-bar">
+    <div class="search-container">
+        <input id="search" type="text" placeholder="Enter ID or Name" autocomplete="off">
+        <button class="search-btn" onclick="search()">Search</button>
+    </div>
+</div>
+
+<!-- Result card below -->
+<div class="result-container">
+    <div id="result"></div>
+</div>
+
+<!-- Activity panel - with close button and header -->
+<div id="activityPanel" class="activity-panel">
+    <div style="text-align:right; margin-bottom:10px;">
+        <button onclick="document.getElementById('activityPanel').style.display='none'" style="background:#c62828; color:white; border:none; padding:6px 12px; border-radius:8px; cursor:pointer; font-size:13px;">✖ Close</button>
+    </div>
+    <strong style="display:block; margin-bottom:10px; color:#4a148c;">Recent Activity (Latest first)</strong>
+    <hr style="margin:10px 0; border:none; border-top:1px solid #ddd;">
+</div>
+
+<script>
+/* Attendance counter */
+function loadCount() {
+    google.script.run.withSuccessHandler(c => {
+        document.getElementById("count").innerText = c;
+    }).getAttendanceCount();
+}
+
+/* Search */
+function search() {
+    const q = document.getElementById("search").value.trim();
+    if(!q) return;
+    google.script.run.withSuccessHandler(show).searchParticipant(q);
+}
+
+function show(data){
+    const div = document.getElementById("result");
+    if(!data){ 
+        div.innerHTML = "<p style='text-align:center; color:#666;'>No participant found</p>"; 
+        return; 
+    }
+    const p = data.participant;
+
+    let html = `<div class="card">
+        <p><b>ID:</b> ${p.id}</p>
+        <p><b>Name:</b><br><input id="name_${data.row}" value="${p.name}"></p>
+        <p><b>Degree:</b><br><input id="degree_${data.row}" value="${p.degree}"></p>
+        <p><b>Email:</b><br><input id="email_${data.row}" value="${p.email}"></p>
+        <p><b>Whatsapp:</b><br><input id="whatsapp_${data.row}" value="${p.whatsapp}"></p>
+        <p><b>Lunch Type:</b> ${p.lunch || 'Not specified'}</p>
+        <p><b>District:</b><br><input id="district_${data.row}" value="${p.district}"></p>`;
+
+    if(p.registered==="Yes"){
+        html += `<p class="success">✅ Already Checked In</p>`;
+    } else {
+        html += `<button onclick="register(${data.row})">Mark as Registered</button>`;
+    }
+
+    html += `<button onclick="saveRecord(${data.row},'${p.id}')">Save Changes</button>
+    </div>`;
+    
+    div.innerHTML = html;
+}
+
+/* Register & Save */
+function register(row){
+    google.script.run.withSuccessHandler(r => {
+        if(r.error) alert("Already Checked In");
+        else alert("Check-in Successful!");
+        document.getElementById("count").innerText = r.count;
+        search();
+    }).markRegistered(row);
+}
+
+function saveRecord(row,id){
+    const u = {
+        id:id,
+        name: document.getElementById(`name_${row}`).value,
+        degree: document.getElementById(`degree_${row}`).value,
+        email: document.getElementById(`email_${row}`).value,
+        whatsapp: document.getElementById(`whatsapp_${row}`).value,
+        district: document.getElementById(`district_${row}`).value
+    };
+    google.script.run.withSuccessHandler(()=>{
+        alert("Record saved!");
+        search();
+    }).saveRecord(row,u);
+}
+
+/* Menu */
+function toggleMenu() {
+    const dropdown = document.getElementById("menuDropdown");
+    dropdown.style.display = (dropdown.style.display === "block") ? "none" : "block";
+}
+
+document.addEventListener("click", function(e) {
+    const menuContainer = document.querySelector(".menu-container");
+    if (menuContainer && !menuContainer.contains(e.target)) {
+        document.getElementById("menuDropdown").style.display = "none";
+    }
+});
+
+/* Export & Reset */
+function exportRegistered(){
+    google.script.run.withSuccessHandler(res=>{
+        const link = document.createElement("a");
+        link.href = "data:" + res.mimeType + ";base64," + res.data;
+        link.download = res.filename;
+        link.click();
+        alert("Exported registered participants!");
+    }).exportRegistered();
+    document.getElementById("menuDropdown").style.display = "none";
+}
+
+function resetAttendance(){
+    if(confirm("Are you sure you want to reset all attendance?")){
+        google.script.run.withSuccessHandler(c=>{
+            alert("Attendance reset!");
+            document.getElementById("count").innerText = c;
+        }).resetAttendance();
+    }
+    document.getElementById("menuDropdown").style.display = "none";
+}
+
+/* FIXED Activity History - now shows real data */
+function showActivityHistory() {
+    const panel = document.getElementById("activityPanel");
+    panel.innerHTML = `
+        <div style="text-align:right; margin-bottom:10px;">
+            <button onclick="document.getElementById('activityPanel').style.display='none'" style="background:#c62828; color:white; border:none; padding:6px 12px; border-radius:8px; cursor:pointer; font-size:13px;">✖ Close</button>
+        </div>
+        <strong style="display:block; margin-bottom:10px; color:#4a148c;">Recent Activity (Latest first)</strong>
+        <hr style="margin:10px 0; border:none; border-top:1px solid #ddd;">
+        <div style="color:#666; text-align:center; padding:20px;">Loading recent activity...</div>
+    `;
+    panel.style.display = "block";
+
+    google.script.run.withSuccessHandler(logs => {
+        let content = `
+            <div style="text-align:right; margin-bottom:10px;">
+                <button onclick="document.getElementById('activityPanel').style.display='none'" style="background:#c62828; color:white; border:none; padding:6px 12px; border-radius:8px; cursor:pointer; font-size:13px;">✖ Close</button>
+            </div>
+            <strong style="display:block; margin-bottom:10px; color:#4a148c;">Recent Activity (Latest first)</strong>
+            <hr style="margin:10px 0; border:none; border-top:1px solid #ddd;">
+        `;
+
+        if (!logs || logs.length === 0) {
+            content += `<p style="color:#666; text-align:center; margin-top:20px;">No recent activity recorded yet.</p>`;
+        } else {
+            logs.forEach(entry => {
+                const time = new Date(entry.time).toLocaleString();
+                const actionStyle = entry.action === "CHECK-IN" ? "color:#2e7d32; font-weight:bold;" :
+                                   entry.action === "EDIT" ? "color:#1976d2;" :
+                                   entry.action === "EXPORT" ? "color:#7b1fa2;" :
+                                   entry.action === "RESET" ? "color:#c62828;" : "";
+                
+                content += `<div class="activity-item">
+                    <div style="font-size:90%; color:#555;">${time}</div>
+                    <div style="${actionStyle}">[${entry.action}] ${entry.details}</div>
+                    <div style="font-size:85%; color:#777;">${entry.id} - ${entry.name}</div>
+                </div>`;
+            });
+        }
+
+        panel.innerHTML = content;
+    }).getActivityHistory();
+
+    document.getElementById("menuDropdown").style.display = "none";
+}
+</script>
+
+</body>
+</html>
